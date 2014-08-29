@@ -1,12 +1,20 @@
 <?php
 
-    /**
-     * @file
-     * This widget outputs the form for the default value edit page
-     *
-     * Questiontypes: selectbox type: !
-     *
-     */
+/**
+ * @file
+ *
+ * This file holds the widget for the multiple choice question type, to edit it's default values.
+ *
+ * Features:
+ * - Marker preselection
+ * - EM integration to insert an em expression like {TOKEN:ATTRIBUTE_6}. At this state there is no validation implemented. Attributes must hold Y or N.
+ *
+ * DEV MEMO:
+ * Validation could be difficult cause if you using tokens and you don't had setup a working token dataset
+ *
+ * For this feature you need editDefaultvalues.php, database.php, adminstyle.css
+ */
+
     class answerscales_defaultvalue_widget extends CWidget
     {
         public $widgetOptions;
@@ -22,15 +30,14 @@
             $questionrow = $this->widgetOptions['questionrow'];
             $langopts = $this->widgetOptions['langopts'];
             $language = $this->widgetOptions['language'];
+            $clang = $this->widgetOptions['clang'];
 
             $aList = array();
             $aHtmlOptions = array();
             $sList_select = '';
             $sList_em_value = '';
-            $sEmfield_css = '';
+            $sEmfield_css_class = '';
             $scale_id = 0;
-            $sLabel = 'Default answer value:'; //clang->gT('Default answer value:');
-
             $aOpts = $langopts[$language][$questionrow['type']][$scale_id];
 
             if(is_numeric ($aOpts['defaultvalue']) || empty($aOpts['defaultvalue']))
@@ -45,37 +52,34 @@
 
             $sElement_id = 'defaultanswerscale_' . $scale_id . '_' . $language;
             // create option list
-            $aList['EM'] = 'EM Value'; // add EM option todo insert lang function
+            $aList['EM'] = $clang->gT('< EM Value >'); // add EM option todo insert lang function
             foreach($aOpts['answers'] as $answer)
             {
                 $answer = $answer->attributes;
                 $aList[$answer['code']] = $answer['answer'];
             }
-// set helper css
+            // set helper css
             if($sList_select != 'EM')
             {
-                $sEmfield_css = 'hide'; // to helper class in twitter is missing - insert it - now in admin style!!.hide {display: none !important;visibility: hidden !important;
+                $sEmfield_css_class = 'hide';
             }
 
             $aHtmlOptions = array(
                 'id'       => $sElement_id,
-                'empty'    => '<No default value>',
-                // todo $clang->eT('<No default value>')
-
+                'empty'    => $clang->gT('<No default value>'),
                 'onchange' => '// show EM Value Field
                                    if ($(this).val() == "EM"){
                                        $("#"+$(this).closest("select").attr("id")+ "_EM").removeClass("hide");
                                    }else{
                                        $("#"+$(this).closest("select").attr("id")+ "_EM").addClass("hide");} '
             );
-
+// todo ad a help popover??
             echo '<li>';
-            echo CHtml::label ($sLabel, $sElement_id); // write label of selectlist
+            echo CHtml::label ($clang->gT('Default answer value:'), $sElement_id); // write label of selectlist
             echo CHtml::dropDownList ($sElement_id, $sList_select, $aList, $aHtmlOptions); // write selectlist
-            // show em value field
-            echo CHtml::textField ($sElement_id . '_EM', $sList_em_value, array(
+            echo CHtml::textField ($sElement_id . '_EM', $sList_em_value, array( // insert em value field
                 'id'    => $sElement_id . '_EM',
-                'class' => $sEmfield_css,
+                'class' => $sEmfield_css_class,
                 'width' => 100
             ));
             echo '</li>';
