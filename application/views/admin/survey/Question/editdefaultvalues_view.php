@@ -82,6 +82,18 @@
                                     {
                                         case 'L':
                                         case 'M':
+                                        $inputStyle='enum';
+                                        // multiple choice
+                                        // todo after completing all widgets maybe call this only one time
+                                        $widgetOptions = array(
+                                                'language' =>$language ,
+                                                'questionrow' => $questionrow,
+                                                'qtproperties' => $qtproperties,
+                                                'langopts' => $langopts,
+                                                'clang' => $clang
+                                        );
+                                        $this->widget('application.views.admin.survey.Question.answerscales_defaultvalue_widget', array('widgetOptions'=>$widgetOptions));
+
                                         case 'O':
                                         case 'P':
                                         case '!':
@@ -92,7 +104,7 @@
                                             $inputStyle='text';
                                             break;
                                     }
-                                    if ($inputStyle == 'enum')
+                                if ($inputStyle == 'enum' && $questionrow['type'] != 'M')
                                     {
                                         foreach ($opts['sqresult'] as $aSubquestion)
                                         {
