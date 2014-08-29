@@ -70,12 +70,11 @@ class database extends Survey_Common_Action
                     }
                 }
             }
+            // this is used for following qtypes: M
             if ($aQuestionTypeList[$sQuestionType]['subquestions']>0)
             {
-
                 foreach ($aSurveyLanguages as $sLanguage)
                 {
-
                     $arQuestions = Question::model()->findAllByAttributes(array('sid'=>$iSurveyID, 'gid'=>$iQuestionGroupID, 'parent_qid'=>$iQuestionID, 'language'=>$sLanguage, 'scale_id'=>0));
 
                     for ($iScaleID=0;$iScaleID<$aQuestionTypeList[$sQuestionType]['subquestions'];$iScaleID++)
@@ -83,9 +82,23 @@ class database extends Survey_Common_Action
 
                         foreach ($arQuestions as $aSubquestionrow)
                         {
-                            if (!is_null(Yii::app()->request->getPost('defaultanswerscale_'.$iScaleID.'_'.$sLanguage.'_'.$aSubquestionrow['qid'])))
-                            {
-                                $this->_updateDefaultValues($iQuestionID,$aSubquestionrow['qid'],$iScaleID,'',$sLanguage,Yii::app()->request->getPost('defaultanswerscale_'.$iScaleID.'_'.$sLanguage.'_'.$aSubquestionrow['qid']),true);
+                            $sElement_id = 'defaultanswerscale_'.$iScaleID.'_'.$sLanguage.'_'.$aSubquestionrow['qid'];
+                            if(Yii::app()->request->getPost($sElement_id) == 'EM'){  // Case 'EM'
+                                $this->_updateDefaultValues($iQuestionID,$aSubquestionrow['qid'],$iScaleID,'',$sLanguage,Yii::app()->request->getPost($sElement_id.'_EM'),true); //Case 'EM': write Expression to database
+                            }else{
+                                $this->_updateDefaultValues($iQuestionID,$aSubquestionrow['qid'],$iScaleID,'',$sLanguage,Yii::app()->request->getPost($sElement_id),true); // write marker to database
+                            }
+                        }
+                        // Check if in question is the "Other-Option" active
+                        // other case do not know if flag is there from system
+                        $sElement_id = 'defaultanswerscale_'.$iScaleID.'_'.$sLanguage.'_0';  // is this clever? _other?? could be better
+                        if (!is_null(Yii::app()->request->getPost($sElement_id))){
+                            // NEW update default values to table with new em function
+                            // todo Problem with the question sub code - what should be taken?
+                            if(Yii::app()->request->getPost($sElement_id) == 'EM'){
+                                $this->_updateDefaultValues($iQuestionID,0,$iScaleID,'',$sLanguage,Yii::app()->request->getPost($sElement_id.'_EM'),true); //Case 'EM': write Expression to database
+                            } else{
+                                $this->_updateDefaultValues($iQuestionID,0,$iScaleID,'',$sLanguage,'',true);
                             }
                         }
                     }
