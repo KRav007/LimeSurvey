@@ -632,7 +632,9 @@ class UserAction extends Survey_Common_Action
             'dateformat' => Yii::app()->request->getPost('dateformat'),
             'htmleditormode' => Yii::app()->request->getPost('htmleditormode'),
             'questionselectormode' => Yii::app()->request->getPost('questionselectormode'),
-            'templateeditormode' => Yii::app()->request->getPost('templateeditormode')
+            'templateeditormode' => Yii::app()->request->getPost('templateeditormode'),
+            'full_name' => Yii::app()->request->getPost('full_name'),
+            'email' => Yii::app()->request->getPost('email'),
             );
 
             $uresult = User::model()->updateByPk(Yii::app()->session['loginID'], $aData);
@@ -653,16 +655,25 @@ class UserAction extends Survey_Common_Action
             Yii::app()->session['questionselectormode'] = Yii::app()->request->getPost('questionselectormode');
             Yii::app()->session['templateeditormode'] = Yii::app()->request->getPost('templateeditormode');
             Yii::app()->session['dateformat'] = Yii::app()->request->getPost('dateformat');
+            Yii::app()->session['templateeditormode'] = Yii::app()->request->getPost('templateeditormode');
+            Yii::app()->session['full_name'] = Yii::app()->request->getPost('full_name');
+            Yii::app()->session['email'] = Yii::app()->request->getPost('email');
+
+
             Yii::app()->session['flashmessage'] = gT("Your personal settings were successfully saved.");
         }
 
         // Get user lang
-        $user = User::model()->findByPk(Yii::app()->session['loginID']);
-        $aData['sSavedLanguage'] = $user->lang;
+        $aUser = User::model()->findByPk(Yii::app()->session['loginID'])->getAttributes();
+
+       // $aData['sSavedLanguage'] = $user->lang;
+
+
 
         $aData['fullpagebar']['savebutton']['form'] = 'personalsettings';
         $aData['fullpagebar']['closebutton']['url'] = 'admin/survey/sa/index';
 
+        $aData = array_merge($aData,$aUser);
         // Render personal settings view
         $this->_renderWrappedTemplate('user', 'personalsettings', $aData);
     }
