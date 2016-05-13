@@ -7,8 +7,8 @@
  * @var $cellwidth
  */
  ?>
-
-<table class="no-more-tables array-by-columns-table table-array-by-column table question subquestion-list questions-list">
+<div class="no-more-tables ano-more-tables-array-by-columns-table">
+<table class="array-by-columns-table table-array-by-column table question subquestion-list questions-list">
     <colgroup class="col-responses">
         <col class="col-answers" style='width: 50%' />
 
@@ -64,7 +64,7 @@
     </tbody>
 
 </table>
-
+</div>
 <?php foreach ($anscode as $i => $ld): ?>
     <input 
         type="hidden" 
